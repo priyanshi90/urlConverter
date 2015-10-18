@@ -3,7 +3,7 @@ package main
 import (
     "net/http"
 
-    _"github.com/gorilla/mux"
+    "github.com/gorilla/mux"
 )
 
 type Route struct {
@@ -39,7 +39,7 @@ var routes = Routes{
     Route{
         "Original",
         "GET",
-        "/original/{shortURL}",
+        "/original",
         handleGetRequest,
     },
 }

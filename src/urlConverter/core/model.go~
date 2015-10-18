@@ -7,14 +7,24 @@ import (
     "fmt"
     "strconv"
     "database/sql"
-    "github.com/go-sql-driver/mysql"
+    "strings"
+    _"github.com/go-sql-driver/mysql"
+    //"github.com/gorilla/mux"
 )
 
-type long_url_struct struct {
-	Url string
+type longUrlStruct struct {
+	Url string `json:"url"`
 }
 
-func mysqlConnect(Url string) {
+type shortUrlStruct struct {
+	Short string `json:"short"`
+}
+
+type originalUrlStruct struct {
+	Original string `json:"original"`
+}
+
+func mysqlInsert(Url string)(mySqlInsertId string) {
 db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/urlConverter?charset=utf8")
 checkErr(err)
 stmt, err := db.Prepare("INSERT URL_LIST SET LONG_URL=?")
@@ -25,56 +35,82 @@ checkErr(err)
 checkErr(err)
     fmt.Println(id)
 
-sendShortUrl(strconv.Itoa(int(id)));
+mySqlInsertId = strconv.Itoa(int(id))
+return
 }
 
-func sendShortUrl(id string) {
-shortUrl := base64.StdEncoding.EncodeToString([]byte(id))
+func sendShortUrl(id string)(shortUrl string) {
+shortUrl = base64.StdEncoding.EncodeToString([]byte(id))
 fmt.Println(shortUrl)
 
-data, err := base64.StdEncoding.DecodeString(shortUrl)
-checkErr(err)
-fmt.Printf("%q\n", data)
-//fmt.Fprintln(w, "short:", data)	
+return	
 }
 
+func getMysqlID(shortUrl string)(mySqlInsertId int) {
+temp := strings.Split(shortUrl, "/");
+fmt.Println(temp);
+var id []byte
+err := base64.StdEncoding.Decode(id, []byte(shortUrl))
+return
+}
 
+func mysqlGetLongUrl(id int)(longUrl string){
+longUrl = "wkdnfjasdhchjd"
+return
+}
 
-func handlePostRequest(rw http.ResponseWriter, req *http.Request) {
+func handleShortRequest(rw http.ResponseWriter, req *http.Request) {
     decoder := json.NewDecoder(req.Body)
 
-	var t long_url_struct
+	var t longUrlStruct
 	err := decoder.Decode(&t)
 
 	checkErr(err)
 	fmt.Println(t.Url)
 	if len(t.Url)>0{
-	mysqlConnect(t.Url)
+	mySqlInsertID := mysqlInsert(t.Url)
+	shortUrl := sendShortUrl(mySqlInsertID)
+	
+	fmt.Println(shortUrl)
+	temp := []string{"http://localhost/", shortUrl}
+
+	var responseUrl = strings.Join(temp, "")
+		fmt.Println(responseUrl)
+	response := shortUrlStruct{Short: responseUrl}
+	json.NewEncoder(rw).Encode(response)
+
 	} else {
 	 fmt.Println("Empty")
 	}
 
-
-    //LOG: that
 }
 
-func handleGetRequest(rw http.ResponseWriter, req *http.Request) {
+func handleOriginalRequest(rw http.ResponseWriter, req *http.Request) {
     decoder := json.NewDecoder(req.Body)
 
-	var t long_url_struct
+	var t shortUrlStruct
 	err := decoder.Decode(&t)
 
 	checkErr(err)
-	fmt.Println(t.Url)
-	if len(t.Url)>0{
-	mysqlConnect(t.Url)
+	fmt.Println(t.Short)
+	if len(t.Short)>0{
+	mySqlInsertID := getMysqlID(t.Short)
+	longUrl := mysqlGetLongUrl(mySqlInsertID)
+	fmt.Println(longUrl)
+	//temp := []string{"http://localhost/", shortUrl}
+
+	//var responseUrl = strings.Join(temp, "")
+		//fmt.Println(responseUrl)
+	response := originalUrlStruct{Original: longUrl}
+	json.NewEncoder(rw).Encode(response)
+
 	} else {
 	 fmt.Println("Empty")
 	}
 
-
-    //LOG: that
 }
+
+
 
 func checkErr(err error) {
     if err != nil {
