@@ -1,0 +1,22 @@
+How to Test:
+
+
+Istall CURL in the linux box by executing the following command:
+
+	sudo apt-get install CURL
+
+For testing the URL Coneversion from a long URL to short URL run the following CURL command:
+
+	curl -X POST -d "{\"url\": \"http://www.test.com?veryverylongurlwhichistobeshortened\"}" http://localhost:8080/shorten
+
+The above will give the following response:
+	
+	{"short":"http://localhost/MQ=="}
+
+For testing the URL Coneversion from a short URL to long URL run the following CURL command:
+
+	curl -X POST -d "{\"short\": \"http://localhost/MQ==\"}" http://localhost:8080/original
+
+The above will give the following response:
+	
+	{"original":"http://www.test.com?veryverylongurlwhichistobeshortened"}

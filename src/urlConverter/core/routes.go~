@@ -34,12 +34,12 @@ var routes = Routes{
         "Shorten",
         "POST",
         "/shorten",
-        handlePostRequest,
+        handleShortRequest,
     },
     Route{
         "Original",
-        "GET",
+        "POST",
         "/original",
-        handleGetRequest,
+        handleOriginalRequest,
     },
 }

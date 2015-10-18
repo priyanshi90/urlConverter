@@ -121,11 +121,13 @@ func handleShortRequest(rw http.ResponseWriter, req *http.Request) {
 		response := shortUrlStruct{Short: responseUrl}
 		rw.WriteHeader(http.StatusOK)
 		json.NewEncoder(rw).Encode(response)
+		return
 	} else {
 		exception = emptyURLError
 		response := errorStruct{Exception: exception}
 		rw.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(rw).Encode(response)
+		return
 	}
 
 }

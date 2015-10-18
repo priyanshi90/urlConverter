@@ -1,0 +1,20 @@
+URL Converter HTTP API
+
+There could be the following two options for the solution of the given problem
+
+Option 1 : Using pre defined algorithm
+
+	Without using any database convert the URLs using a pre defined algorithm and get the Long/Short URLs.
+
+Option 2 : Using the Database Primary Unique Key
+
+	With using database insert primary key and giving the base64 conversion as short URL.
+
+Reasons for choosing Option 2:
+
+	1. An alogithm could take more time and processing
+	2. Database key would be unique everytime and so would be the base64 conversion
+
+Both the processes (Short->Long and Long->Short) are POST requests as POST requests are better since the data is to be sent in JSON format.
+
+
